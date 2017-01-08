@@ -1,4 +1,4 @@
-# mailer.py
-mailer.py - Simple script to send emails via TLS
+# othermailer.py
+othermailer.py - Just another simple script to send emails via TLS
 
-View mailer.py script for sender configuration and run mailer.py --help
+View othermailer.py script for sender configuration and run othermailer.py --help

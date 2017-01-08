@@ -1,8 +1,8 @@
 #coding: UTF-8
 '''
-    mailer.py - Simple script to send emails via TLS
+    othermailer.py - Just another simple script to send emails via TLS
     Sergio Fernandez <sergio@fenandezcordero.net>
-    Usage: python3 mailer.py --help
+    Usage: python3 othermailer.py --help
 '''
 
 import sys
