@@ -12,7 +12,7 @@ import argparse
 import socket
 import datetime
 from random import choice
-from string import ascii_lowercase,digits
+from string import ascii_lowercase, digits
 
 # Configure your sender settings
 config = {
@@ -23,62 +23,62 @@ config = {
 }
 
 # Parse arguments about receiver
-parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--subject", help="Mail subject", type=str)
-parser.add_argument("-t", "--to", help="Destination email(s)", type=str)
-parser.add_argument("-b", "--body", help="Message body", type=str)
-args = parser.parse_args()
+PARSER = argparse.ArgumentParser()
+PARSER.add_argument("-s", "--subject", help="Mail subject", type=str)
+PARSER.add_argument("-t", "--to", help="Destination email(s)", type=str)
+PARSER.add_argument("-b", "--body", help="Message body", type=str)
+ARGS = PARSER.parse_args()
 
 # Headers values. In most cases, default values are ok for text-only content
-mime_ver = "1.0"
-content_type = "text/plain"
-charset = "UTF-8"
-mailer_id = "Othermailer.py - https://github.com/ElAutoestopista/othermailer.py"
-date_str = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")
+MIME_VER = "1.0"
+CONTENT_TYPE = "text/plain"
+CHARSET = "UTF-8"
+MAILER_ID = "Othermailer.py - https://github.com/ElAutoestopista/othermailer.py"
+DATE_STR = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")
 
 # It's considered a good practice that MUA generates a message ID, so we are going to generate one randomly.
-hostname = socket.getfqdn()
-rand_str = ''.join(choice(ascii_lowercase + digits) for i in range(20))
-message_id = "<"+rand_str+"@"+hostname+">"
+HOSTNAME = socket.getfqdn()
+RAND_STR = ''.join(choice(ascii_lowercase + digits) for i in range(20))
+Message_Id = "<"+RAND_STR+"@"+HOSTNAME+">"
 
 # Check arguments
-if args.subject:
-    subject = args.subject
+if ARGS.subject:
+    Subject = ARGS.subject
 else:
     print("No subject defined")
     sys.exit(1)
-if args.body:
-    msg = args.body
+if ARGS.body:
+    Msg = ARGS.body
 else:
     print("No message defined")
     sys.exit(1)
-if args.to:
-    to = args.to
+if ARGS.to:
+    To = ARGS.to
 else:
     print("No destination defined")
     sys.exit(1)
 
 # Build message headers
-message = """\
+Message = """\
 From: %s
 To: %s
 Subject: %s
 Message-ID: %s
 X-Mailer: %s
 MIME-Version: %s
-Content-Type: %s; charset="%s"
+Content-Type: %s; CHARSET="%s"
 Date: %s
 
 %s
-""" % (config.get('USER'), to, subject, message_id, mailer_id, mime_ver, content_type, charset, date_str, msg)
+""" % (config.get('USER'), To, Subject, Message_Id, MAILER_ID, MIME_VER, CONTENT_TYPE, CHARSET, DATE_STR, Msg)
 
 # Connect and try to send
 try:
-    server = smtplib.SMTP(config.get('HOST'), config.get('PORT'))
-    server.ehlo()
-    server.starttls()
-    server.login(config.get('USER'), config.get('PASS'))
-    server.sendmail(config.get('USER'), to, message)
+    Othermailer = smtplib.SMTP(config.get('HOST'), config.get('PORT'))
+    Othermailer.ehlo()
+    Othermailer.starttls()
+    Othermailer.login(config.get('USER'), config.get('PASS'))
+    Othermailer.sendmail(config.get('USER'), To, Message)
     print("Sent")
-except smtplib.SMTPException as e:
-    print("ERROR: " + e)
+except smtplib.SMTPException as Error:
+    print("ERROR: " + Error)
