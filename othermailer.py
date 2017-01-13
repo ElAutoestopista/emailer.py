@@ -8,13 +8,14 @@
 import sys
 import smtplib
 import argparse
+import datetime
 
 # Configure your sender settings
 config = {
-    'USER' : "user@domain",
-    'PASS' : "password",
-    'HOST' : "mail.host.name",
-    'PORT' : "587"
+    'USER': "user@domain",
+    'PASS': "password",
+    'HOST': "mail.host.name",
+    'PORT': "587"
 }
 
 # Parse arguments about receiver
@@ -23,6 +24,9 @@ parser.add_argument("-s", "--subject", help="Mail subject", type=str)
 parser.add_argument("-t", "--to", help="Destination email(s)", type=str)
 parser.add_argument("-b", "--body", help="Message body", type=str)
 args = parser.parse_args()
+
+# Generate date string
+date_str = datetime.datetime.utcnow().strftime("%a, %w %b %Y %H:%M:%S %z")
 
 # Check arguments
 if args.subject:
@@ -46,9 +50,10 @@ message = """\
 From: %s
 To: %s
 Subject: %s
+Date: %s
 
 %s
-""" % (config.get('USER'), to, subject, msg)
+""" % (config.get('USER'), to, subject, date_str, msg)
 
 # Connect and try to send
 try:
