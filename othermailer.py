@@ -25,7 +25,7 @@ config = {
 # Parse arguments about receiver
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument("-s", "--subject", help="Mail subject", type=str)
-PARSER.add_argument("-t", "--to", help="Destination email(s)", type=str)
+PARSER.add_argument("-t", "--to", help="Destination emails, separated by comma", type=str)
 PARSER.add_argument("-b", "--body", help="Message body", type=str)
 ARGS = PARSER.parse_args()
 
@@ -53,7 +53,7 @@ else:
     print("No message defined")
     sys.exit(1)
 if ARGS.to:
-    To = ARGS.to
+    To = [x.strip() for x in ARGS.to.split(',')]
 else:
     print("No destination defined")
     sys.exit(1)
@@ -70,7 +70,7 @@ Content-Type: %s; CHARSET="%s"
 Date: %s
 
 %s
-""" % (config.get('USER'), To, Subject, Message_Id, MAILER_ID, MIME_VER, CONTENT_TYPE, CHARSET, DATE_STR, Msg)
+""" % (config.get('USER'), ','.join(To), Subject, Message_Id, MAILER_ID, MIME_VER, CONTENT_TYPE, CHARSET, DATE_STR, Msg)
 
 # Connect and try to send
 try:
