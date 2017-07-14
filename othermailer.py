@@ -13,12 +13,21 @@ import socket
 import datetime
 from random import choice
 from string import ascii_lowercase, digits
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Configure your sender settings
+#config = {
+#    'USER': "user@domain",
+#    'PASS': "password",
+#    'HOST': "mail.host.name",
+#    'PORT': "587"
+#}
+
 config = {
-    'USER': "user@domain",
-    'PASS': "password",
-    'HOST': "mail.host.name",
+    'USER': "beserker@proyectopqmc.com",
+    'PASS': "beserker_99",
+    'HOST': "mail.gandi.net",
     'PORT': "587"
 }
 
@@ -27,11 +36,10 @@ PARSER = argparse.ArgumentParser()
 PARSER.add_argument("-s", "--subject", help="Mail subject", type=str)
 PARSER.add_argument("-t", "--to", help="Destination emails, separated by comma", type=str)
 PARSER.add_argument("-b", "--body", help="Message body", type=str)
+PARSER.add_argument("-a", "--attach", help="Text file to attach", type=str)
 ARGS = PARSER.parse_args()
 
 # Headers values. In most cases, default values are ok for text-only content
-MIME_VER = "1.0"
-CONTENT_TYPE = "text/plain"
 CHARSET = "UTF-8"
 MAILER_ID = "Othermailer.py - https://github.com/ElAutoestopista/othermailer.py"
 DATE_STR = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")
@@ -48,7 +56,7 @@ else:
     print("No subject defined")
     sys.exit(1)
 if ARGS.body:
-    Msg = ARGS.body
+    Msg = MIMEText(ARGS.body, 'plain')
 else:
     print("No message defined")
     sys.exit(1)
@@ -57,20 +65,29 @@ if ARGS.to:
 else:
     print("No destination defined")
     sys.exit(1)
+if ARGS.attach:
+    try:
+        f = file(ARGS.attach)
+        Attachment = MIMEText(f.read())
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+else:
+    print("No file for attachment specified")
 
 # Build message headers
-Message = """\
-From: %s
-To: %s
-Subject: %s
-Message-ID: %s
-X-Mailer: %s
-MIME-Version: %s
-Content-Type: %s; CHARSET="%s"
-Date: %s
-
-%s
-""" % (config.get('USER'), ','.join(To), Subject, Message_Id, MAILER_ID, MIME_VER, CONTENT_TYPE, CHARSET, DATE_STR, Msg)
+Message = MIMEMultipart()
+Message['From'] = config.get('USER')
+Message['To'] = ','.join(To)
+Message['Date'] = DATE_STR
+Message['Subject'] = Subject
+Message['Message-ID'] = Message_Id
+Message['X-Mailer'] = MAILER_ID
+Message['CHARSET'] = CHARSET
+Message.attach(Msg)
+if ARGS.attach:
+    Attachment.add_header('Content-Disposition', 'attachment', filename=ARGS.attach)
+    Message.attach(Attachment)
 
 # Connect and try to send
 try:
@@ -78,7 +95,7 @@ try:
     Othermailer.ehlo()
     Othermailer.starttls()
     Othermailer.login(config.get('USER'), config.get('PASS'))
-    Othermailer.sendmail(config.get('USER'), To, Message)
+    Othermailer.sendmail(config.get('USER'), To, Message.as_string())
     print("Sent")
 except smtplib.SMTPException as Error:
     print("ERROR: " + Error)
