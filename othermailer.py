@@ -67,7 +67,7 @@ else:
     sys.exit(1)
 if ARGS.attach:
     try:
-        f = file(ARGS.attach)
+        f = open(ARGS.attach)
         Attachment = MIMEText(f.read())
     except Exception as e:
         print(e)
